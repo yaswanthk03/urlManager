@@ -12,9 +12,10 @@ import {
 } from "./ui/card";
 import {Button} from "./ui/button";
 import {useNavigate, useSearchParams} from "react-router-dom";
-import {signup} from "@/db/apiAuth";
-import {BeatLoader} from "react-spinners";
+import { signup } from "@/db/apiAuth";
+import { BeatLoader } from "react-spinners";
 import useFetch from "@/hooks/use-fetch";
+import { UrlState } from "@/context";
 
 const Signup = () => {
   let [searchParams] = useSearchParams();
@@ -31,22 +32,24 @@ const Signup = () => {
   });
 
   const handleInputChange = (e) => {
-    const {name, value, files} = e.target;
+    const { name, value, files } = e.target;
     setFormData((prevState) => ({
       ...prevState,
       [name]: files ? files[0] : value,
     }));
   };
 
-  const {loading, error, fn: fnSignup, data} = useFetch(signup, formData);
-  
+  const { loading, error, fn: fnSignup, data } = useFetch(signup, formData);
+  const { fetchUser } = UrlState();
 
   useEffect(() => {
     if (error === null && data) {
-      navigate(`/dashboard?${longLink ? `createNew=${longLink}` : ""}`);
+      console.log(data);
+      fetchUser();
+      navigate(`/dashboard${longLink ? `?createNew=${longLink}` : ""}`);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [error, loading]);
+  }, [error, data]);
 
   const handleSignup = async () => {
     setErrors([]);
@@ -64,6 +67,7 @@ const Signup = () => {
 
       await schema.validate(formData, { abortEarly: false });
       await fnSignup();
+      //await fnSignin();
     } catch (error) {
       const newErrors = {};
       if (error?.inner) {
