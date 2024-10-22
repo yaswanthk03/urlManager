@@ -7,26 +7,43 @@ import {deleteUrl} from "@/db/apiUrls";
 import {BeatLoader} from "react-spinners";
 
 const LinkCard = ({url = [], fetchUrls}) => {
-  const downloadImage = () => {
-    const imageUrl = url?.qr;
-    const fileName = url?.title; // Desired file name for the downloaded image
+  const downloadImage = async () => {
+    try {
+      const imageUrl = url?.qr;
+      const fileName = url?.title || "downloaded_image";
 
-    // Create an anchor element
-    const anchor = document.createElement("a");
-    anchor.href = imageUrl;
-    anchor.download = fileName;
+      if (!imageUrl) {
+        console.error("Image URL is not defined.");
+        return;
+      }
 
-    // Append the anchor to the body
-    document.body.appendChild(anchor);
+      // Fetch the image as a blob
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
 
-    // Trigger the download by simulating a click event
-    anchor.click();
+      // Create a temporary URL for the blob
+      const blobUrl = URL.createObjectURL(blob);
 
-    // Remove the anchor from the document
-    document.body.removeChild(anchor);
+      // Create an anchor element for download
+      const anchor = document.createElement("a");
+      anchor.href = blobUrl;
+      anchor.download = fileName;
+
+      // Append the anchor to the body
+      document.body.appendChild(anchor);
+
+      // Trigger the download by simulating a click event
+      anchor.click();
+
+      // Clean up: remove the anchor and revoke the blob URL
+      document.body.removeChild(anchor);
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("An error occurred while downloading the image:", error);
+    }
   };
 
-  const {loading: loadingDelete, fn: fnDelete} = useFetch(deleteUrl, url.id);
+  const { loading: loadingDelete, fn: fnDelete } = useFetch(deleteUrl, url.id);
 
   return (
     <div className="flex flex-col md:flex-row gap-5 border p-4 bg-gray-900 rounded-lg">
