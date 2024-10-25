@@ -28,6 +28,7 @@ const Signup = () => {
     name: "",
     email: "",
     password: "",
+    confirmation: "",
     profile_pic: null,
   });
 
@@ -60,16 +61,26 @@ const Signup = () => {
           .email("Invalid email")
           .required("Email is required"),
         password: Yup.string()
-          .min(8, "Password must be at least 6 characters")
+          .min(8, "Password must be at least 8 characters")
           .required("Password is required"),
-        profile_pic: Yup.mixed().required("Profile picture is required"),
+        //profile_pic: Yup.mixed().notRequired(),
       });
 
       await schema.validate(formData, { abortEarly: false });
+
+      if (formData.password !== formData.confirmation) {
+        throw { confirmation: "Passwords do not match" };
+      }
       await fnSignup();
       //await fnSignin();
     } catch (error) {
       const newErrors = {};
+
+      if (error.confirmation) {
+        newErrors["confirmation"] = error.confirmation;
+        setErrors(newErrors);
+        return;
+      }
       if (error?.inner) {
         error.inner.forEach((err) => {
           newErrors[err.path] = err.message;
@@ -94,6 +105,7 @@ const Signup = () => {
       <CardContent className="space-y-2">
         <div className="space-y-1">
           <Input
+            autoFocus
             name="name"
             type="text"
             placeholder="Enter Name"
@@ -119,6 +131,15 @@ const Signup = () => {
           />
         </div>
         {errors.password && <Error message={errors.password} />}
+        <div className="space-y-1">
+          <Input
+            name="confirmation"
+            type="password"
+            placeholder="Retype Password"
+            onChange={handleInputChange}
+          />
+        </div>
+        {errors.confirmation && <Error message={errors.confirmation} />}
         <div className="space-y-1">
           <input
             name="profile_pic"

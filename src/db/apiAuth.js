@@ -14,25 +14,29 @@ export async function login({email, password}) {
 export async function signup({name, email, password, profile_pic}) {
   const fileName = `dp-${name.split(" ").join("-")}-${Math.random()}`;
 
-  const {error: storageError} = await supabase.storage
-    .from("profile_pic")
-    .upload(fileName, profile_pic);
+  if (profile_pic) {
+    const { error: storageError } = await supabase.storage
+      .from("profile_pic")
+      .upload(fileName, profile_pic);
 
-  if (storageError) throw new Error(storageError.message);
+    if (storageError) throw new Error(storageError.message);
+  }
 
-  const {data, error} = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: {
         name,
-        profile_pic: `${supabaseUrl}/storage/v1/object/public/profile_pic/${fileName}`,
+        profile_pic: fileName
+          ? `${supabaseUrl}/storage/v1/object/public/profile_pic/${fileName}`
+          : null,
       },
     },
   });
 
   if (error) throw new Error(error.message);
-  console.log(data);
+  
   return data;
 }
 

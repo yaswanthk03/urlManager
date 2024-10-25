@@ -85,6 +85,7 @@ const Login = () => {
       <CardContent className="space-y-2">
         <div className="space-y-1">
           <Input
+            autoFocus
             name="email"
             type="email"
             placeholder="Enter Email"

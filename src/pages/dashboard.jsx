@@ -30,7 +30,8 @@ const Dashboard = () => {
   );
 
   useEffect(() => {
-    fnUrls();
+    console.log(urls?.length);
+    if (!urls?.length) fnUrls();
   }, []);
 
   const filteredUrls = urls?.filter((url) =>

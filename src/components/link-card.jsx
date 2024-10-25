@@ -5,46 +5,13 @@ import {Button} from "./ui/button";
 import useFetch from "@/hooks/use-fetch";
 import {deleteUrl} from "@/db/apiUrls";
 import {BeatLoader} from "react-spinners";
+import DownloadImage from "./download-image";
 
-const LinkCard = ({url = [], fetchUrls}) => {
-  const downloadImage = async () => {
-    try {
-      const imageUrl = url?.qr;
-      const fileName = url?.title || "downloaded_image";
-
-      if (!imageUrl) {
-        console.error("Image URL is not defined.");
-        return;
-      }
-
-      // Fetch the image as a blob
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-
-      // Create a temporary URL for the blob
-      const blobUrl = URL.createObjectURL(blob);
-
-      // Create an anchor element for download
-      const anchor = document.createElement("a");
-      anchor.href = blobUrl;
-      anchor.download = fileName;
-
-      // Append the anchor to the body
-      document.body.appendChild(anchor);
-
-      // Trigger the download by simulating a click event
-      anchor.click();
-
-      // Clean up: remove the anchor and revoke the blob URL
-      document.body.removeChild(anchor);
-      URL.revokeObjectURL(blobUrl);
-    } catch (error) {
-      console.error("An error occurred while downloading the image:", error);
-    }
-  };
-
+const LinkCard = ({ url = [], fetchUrls }) => {
   const { loading: loadingDelete, fn: fnDelete } = useFetch(deleteUrl, url.id);
 
+  const siteUrl = import.meta.env.VITE_SITE_URL;
+  const link = url?.custom_url ? url?.custom_url : url.short_url;
   return (
     <div className="flex flex-col md:flex-row gap-5 border p-4 bg-gray-900 rounded-lg">
       <img
@@ -57,7 +24,7 @@ const LinkCard = ({url = [], fetchUrls}) => {
           {url?.title}
         </span>
         <span className="text-2xl text-blue-400 font-bold hover:underline cursor-pointer">
-          https://url-manager.vercel.app/
+          {siteUrl}
           {url?.custom_url ? url?.custom_url : url.short_url}
         </span>
         <span className="flex items-center gap-1 hover:underline cursor-pointer">
@@ -71,17 +38,12 @@ const LinkCard = ({url = [], fetchUrls}) => {
       <div className="flex gap-2">
         <Button
           variant="ghost"
-          onClick={() =>
-            navigator.clipboard.writeText(
-              `https://url-manager.vercel.app/${url?.short_url}`
-            )
-          }
+          onClick={() => navigator.clipboard.writeText(`${siteUrl + link}`)}
         >
           <Copy />
         </Button>
-        <Button variant="ghost" onClick={downloadImage}>
-          <Download />
-        </Button>
+        <DownloadImage url={url} />
+
         <Button
           variant="ghost"
           onClick={() => fnDelete().then(() => fetchUrls())}

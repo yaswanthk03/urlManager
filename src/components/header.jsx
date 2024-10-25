@@ -19,8 +19,7 @@ const Header = () => {
   const {loading, fn: fnLogout} = useFetch(logout);
   const navigate = useNavigate();
 
-  const {user, fetchUser} = UrlState();
-
+  const { user, fetchUser } = UrlState();
   return (
     <>
       <nav className="py-4 flex justify-between items-center">
@@ -35,7 +34,9 @@ const Header = () => {
               <DropdownMenuTrigger className="w-10 rounded-full overflow-hidden">
                 <Avatar>
                   <AvatarImage src={user?.user_metadata?.profile_pic} />
-                  <AvatarFallback>PA</AvatarFallback>
+                  <AvatarFallback>
+                    {user?.user_metadata?.name.slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
@@ -43,11 +44,9 @@ const Header = () => {
                   {user?.user_metadata?.name}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Link to="/dashboard" className="flex">
-                    <LinkIcon className="mr-2 h-4 w-4" />
-                    My Links
-                  </Link>
+                <DropdownMenuItem onClick={() => navigate("/dashboard")}>
+                  <LinkIcon className="mr-2 h-4 w-4" />
+                  My Links
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => {
