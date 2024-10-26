@@ -45,11 +45,9 @@ const Signup = () => {
 
   useEffect(() => {
     if (error === null && data) {
-      console.log(data);
       fetchUser();
       navigate(`/dashboard${longLink ? `?createNew=${longLink}` : ""}`);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error, data]);
 
   const handleSignup = async () => {
@@ -63,7 +61,7 @@ const Signup = () => {
         password: Yup.string()
           .min(8, "Password must be at least 8 characters")
           .required("Password is required"),
-        //profile_pic: Yup.mixed().notRequired(),
+        profile_pic: Yup.mixed().notRequired(),
       });
 
       await schema.validate(formData, { abortEarly: false });
@@ -72,7 +70,6 @@ const Signup = () => {
         throw { confirmation: "Passwords do not match" };
       }
       await fnSignup();
-      //await fnSignin();
     } catch (error) {
       const newErrors = {};
 

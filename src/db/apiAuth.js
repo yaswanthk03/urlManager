@@ -11,16 +11,14 @@ export async function login({email, password}) {
   return data;
 }
 
-export async function signup({name, email, password, profile_pic}) {
+export async function signup({ name, email, password, profile_pic }) {
   const fileName = `dp-${name.split(" ").join("-")}-${Math.random()}`;
 
-  if (profile_pic) {
-    const { error: storageError } = await supabase.storage
-      .from("profile_pic")
-      .upload(fileName, profile_pic);
+  const { error: storageError } = await supabase.storage
+    .from("profile_pic")
+    .upload(fileName, profile_pic);
 
-    if (storageError) throw new Error(storageError.message);
-  }
+  if (storageError) throw new Error(storageError.message);
 
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -28,23 +26,19 @@ export async function signup({name, email, password, profile_pic}) {
     options: {
       data: {
         name,
-        profile_pic: fileName
-          ? `${supabaseUrl}/storage/v1/object/public/profile_pic/${fileName}`
-          : null,
+        profile_pic: `${supabaseUrl}/storage/v1/object/public/profile_pic/${fileName}`,
       },
     },
   });
 
   if (error) throw new Error(error.message);
-  
+
   return data;
 }
 
 export async function getCurrentUser() {
-  const {data: session, error} = await supabase.auth.getSession();
+  const { data: session, error } = await supabase.auth.getSession();
   if (!session.session) return null;
-
-  // const {data, error} = await supabase.auth.getUser();
 
   if (error) throw new Error(error.message);
   return session.session?.user;
