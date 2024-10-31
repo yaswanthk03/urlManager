@@ -1,0 +1,50 @@
+table.scrolldown {
+       width: 100%;
+
+       /* border-collapse: collapse; */
+       border-spacing: 0;
+       border: 2px solid rgb(255, 253, 253);
+   }
+
+   /* To display the block as level element */
+   table.scrolldown tbody {
+       display: block;
+        }
+
+   th {
+    
+       height: 60px;
+       line-height: 40px;
+   }
+   table.scrolldown tbody {
+
+            /* Set the height of table body */
+        height: auto;
+       max-height: 350px;
+
+       /* Set vertical scroll */
+       overflow-y: auto;
+
+       /* Hide the horizontal scroll */
+       overflow-x: hidden;
+   }   
+   tbody td,
+   thead th {
+       width: 200px;
+       /* border-right: 2px solid white; */
+   }
+   td {
+       text-align: center;
+   }
+   tr:nth-child(even) {
+       background-color: #eff2ed50;
+   }
+
+   .contain:hover > :not(:hover) {
+       opacity: 0.4;
+   }
+
+   .box{
+    transition: opacity 0.6s ease;
+   }
+ 

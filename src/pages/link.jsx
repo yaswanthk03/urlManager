@@ -1,20 +1,31 @@
-import DeviceStats from "@/components/device-stats";
+import PieChart from "@/components/pie-chart";
 import DownloadImage from "@/components/download-image";
-import Location from "@/components/location-stats";
+import Engagement from "@/components/engagement-stats";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UrlState } from "@/context";
 import { getClicksForUrl } from "@/db/apiClicks";
 import { deleteUrl, getUrl } from "@/db/apiUrls";
 import useFetch from "@/hooks/use-fetch";
-import { Copy, Download, LinkIcon, Trash } from "lucide-react";
-import { useEffect } from "react";
+import { Copy, LinkIcon, Trash } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { BarLoader, BeatLoader } from "react-spinners";
+import { toast } from "react-toastify";
+import { QRCode } from "react-qrcode-logo";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const LinkPage = () => {
   const navigate = useNavigate();
   const { user } = UrlState();
+  const [dispalyStats, setDispalyStats] = useState("");
+
   const { id } = useParams();
   const {
     loading,
@@ -55,7 +66,7 @@ const LinkPage = () => {
         <BarLoader className="mb-4" width={"100%"} color="#36d7b7" />
       )}
       <div className="flex flex-col gap-8 sm:flex-row justify-between">
-        <div className="flex flex-col items-start gap-8 rounded-lg sm:w-2/5">
+        <div className="flex flex-col items-start gap-8 rounded-lg sm:w-2/4">
           <span className="text-6xl font-extrabold hover:underline cursor-pointer">
             {url?.title}
           </span>
@@ -80,7 +91,14 @@ const LinkPage = () => {
           <div className="flex gap-2">
             <Button
               variant="ghost"
-              onClick={() => navigator.clipboard.writeText(`${siteUrl + link}`)}
+              onClick={() => {
+                try {
+                  navigator.clipboard.writeText(`${siteUrl + link}`);
+                  toast(`${siteUrl + link} Copied`, { type: "success" });
+                } catch (error) {
+                  toast("Failed to copy link", { type: "error" });
+                }
+              }}
             >
               <Copy />
             </Button>
@@ -90,6 +108,7 @@ const LinkPage = () => {
               onClick={() =>
                 fnDelete().then(() => {
                   navigate("/dashboard");
+                  toast(`Link deleted successfully`, { type: "success" });
                 })
               }
               disable={loadingDelete}
@@ -101,14 +120,39 @@ const LinkPage = () => {
               )}
             </Button>
           </div>
-          <img
-            src={url?.qr}
-            className="w-full self-center sm:self-start ring ring-blue-500 p-1 object-contain"
-            alt="qr code"
+          <QRCode
+            size={200}
+            className="h-52 self-center sm:self-start ring ring-blue-500 p-1 object-contain"
+            value={siteUrl + (url?.custom_url || url?.short_url)}
+            ecLevel="H"
+            bgColor="#ffffff"
+            fgColor="#000000"
           />
+          {stats?.length !== 0 && (
+            <table class="scrolldown">
+              <tbody>
+                <>
+                  <th>extention</th>
+                  <th>City</th>
+                  <th>Device</th>
+                  <th>DateTime</th>
+                  {stats?.map((stat, i) => (
+                    <tr key={i}>
+                      <td className="font-medium">{stat.extension}</td>
+                      <td>{stat.city}</td>
+                      <td>{stat.device}</td>
+                      <td className="w-32">
+                        {new Date(stat.created_at).toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
+                </>
+              </tbody>
+            </table>
+          )}
         </div>
 
-        <Card className="sm:w-3/5">
+        <Card className="sm:w-2/4">
           <CardHeader>
             <CardTitle className="text-4xl font-extrabold">Stats</CardTitle>
           </CardHeader>
@@ -123,10 +167,37 @@ const LinkPage = () => {
                 </CardContent>
               </Card>
 
-              <CardTitle>Location Data</CardTitle>
-              <Location stats={stats} />
-              <CardTitle>Device Info</CardTitle>
-              <DeviceStats stats={stats} />
+              <CardTitle>Engagements over time</CardTitle>
+              <Engagement stats={stats} />
+              <div className="flex items-center gap-5 mt-4">
+                <Card className="p-2">Select stat:</Card>
+                <Select
+                  onValueChange={(e) => setDispalyStats(e)}
+                  defaultValue={setDispalyStats}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="City" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="city" difault>
+                      City
+                    </SelectItem>
+                    <SelectItem value="device">Device</SelectItem>
+                    <SelectItem value="extention">Extention</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {dispalyStats ? (
+                <>
+                  <CardTitle>{dispalyStats?.toUpperCase()} INFO:</CardTitle>
+                  <PieChart stats={stats} value={dispalyStats} />
+                </>
+              ) : (
+                <>
+                  <CardTitle>CITY INFO:</CardTitle>
+                  <PieChart stats={stats} value="city" />
+                </>
+              )}
             </CardContent>
           ) : (
             <CardContent>

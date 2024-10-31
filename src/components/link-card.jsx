@@ -6,6 +6,8 @@ import useFetch from "@/hooks/use-fetch";
 import {deleteUrl} from "@/db/apiUrls";
 import {BeatLoader} from "react-spinners";
 import DownloadImage from "./download-image";
+import { QRCode } from "react-qrcode-logo";
+import { toast } from "react-toastify";
 
 const LinkCard = ({ url = [], fetchUrls }) => {
   const { loading: loadingDelete, fn: fnDelete } = useFetch(deleteUrl, url.id);
@@ -14,10 +16,13 @@ const LinkCard = ({ url = [], fetchUrls }) => {
   const link = url?.custom_url ? url?.custom_url : url.short_url;
   return (
     <div className="flex flex-col md:flex-row gap-5 border p-4 bg-gray-900 rounded-lg">
-      <img
-        src={url?.qr}
+      <QRCode
+        size={128}
         className="h-32 object-contain ring ring-blue-500 self-start"
-        alt="qr code"
+        value={siteUrl + (url?.custom_url || url?.short_url)}
+        ecLevel="H"
+        bgColor="#ffffff"
+        fgColor="#000000"
       />
       <Link to={`/link/${url?.id}`} className="flex flex-col flex-1">
         <span className="text-3xl font-extrabold hover:underline cursor-pointer">
@@ -38,7 +43,14 @@ const LinkCard = ({ url = [], fetchUrls }) => {
       <div className="flex gap-2">
         <Button
           variant="ghost"
-          onClick={() => navigator.clipboard.writeText(`${siteUrl + link}`)}
+          onClick={() => {
+            try {
+              navigator.clipboard.writeText(`${siteUrl + link}`);
+              toast(`${siteUrl + link} Copied`, { type: "success" });
+            } catch (error) {
+              toast("Failed to copy link", { type: "error" });
+            }
+          }}
         >
           <Copy />
         </Button>
@@ -46,7 +58,10 @@ const LinkCard = ({ url = [], fetchUrls }) => {
 
         <Button
           variant="ghost"
-          onClick={() => fnDelete().then(() => fetchUrls())}
+          onClick={() => {
+            fnDelete().then(() => fetchUrls());
+            toast(`Link deleted successfully`, { type: "success" });
+          }}
           disable={loadingDelete}
         >
           {loadingDelete ? <BeatLoader size={5} color="white" /> : <Trash />}

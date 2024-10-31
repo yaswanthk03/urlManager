@@ -18,12 +18,13 @@ import {createUrl} from "@/db/apiUrls";
 import {BeatLoader} from "react-spinners";
 import {UrlState} from "@/context";
 import {QRCode} from "react-qrcode-logo";
+import { toast } from "react-toastify";
 
 export function CreateLink() {
-  const {user} = UrlState();
+  const { user } = UrlState();
 
   const navigate = useNavigate();
-  const ref = useRef();
+  const siteUrl = import.meta.env.VITE_SITE_URL;
 
   let [searchParams, setSearchParams] = useSearchParams();
   const longLink = searchParams.get("createNew");
@@ -56,7 +57,7 @@ export function CreateLink() {
     error,
     data,
     fn: fnCreateUrl,
-  } = useFetch(createUrl, {...formValues, user_id: user.id});
+  } = useFetch(createUrl, { ...formValues, user_id: user.id });
 
   useEffect(() => {
     if (error === null && data) {
@@ -68,19 +69,16 @@ export function CreateLink() {
   const createNewLink = async () => {
     setErrors([]);
     try {
-      await schema.validate(formValues, {abortEarly: false});
-
-      const canvas = ref.current.canvasRef.current;
-      const blob = await new Promise((resolve) => canvas.toBlob(resolve));
-
-      await fnCreateUrl(blob);
+      await schema.validate(formValues, { abortEarly: false });
+      await fnCreateUrl();
+      toast("Link created successfully", { type: "success" });
     } catch (e) {
       const newErrors = {};
 
       e?.inner?.forEach((err) => {
         newErrors[err.path] = err.message;
       });
-
+      toast("Failed to create link", { type: "error" });
       setErrors(newErrors);
     }
   };
@@ -99,8 +97,12 @@ export function CreateLink() {
         <DialogHeader>
           <DialogTitle className="font-bold text-2xl">Create New</DialogTitle>
         </DialogHeader>
-        {formValues?.longUrl && (
-          <QRCode ref={ref} size={250} value={formValues?.longUrl} />
+        {formValues?.customUrl && (
+          <QRCode
+            size={250}
+            value={siteUrl + formValues?.customUrl}
+            ecLevel="H"
+          />
         )}
 
         <Input
@@ -118,7 +120,7 @@ export function CreateLink() {
         />
         {errors.longUrl && <Error message={errors.longUrl} />}
         <div className="flex items-center gap-2">
-          <Card className="p-2">trimrr.in</Card> /
+          <Card className="p-2">{siteUrl.substring(8)}</Card>
           <Input
             id="customUrl"
             placeholder="Custom Link (optional)"
@@ -126,7 +128,7 @@ export function CreateLink() {
             onChange={handleChange}
           />
         </div>
-        {error && <Error message={errors.message} />}
+        {error && <Error message={error.message} />}
         <DialogFooter className="sm:justify-start">
           <Button
             type="button"

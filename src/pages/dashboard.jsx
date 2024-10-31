@@ -2,24 +2,21 @@
 
 import {useEffect, useState} from "react";
 import {BarLoader} from "react-spinners";
-import {Filter} from "lucide-react";
-
+import { Filter } from "lucide-react";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Input} from "@/components/ui/input";
 import {CreateLink} from "@/components/create-link";
 import LinkCard from "@/components/link-card";
 import Error from "@/components/error";
-
 import useFetch from "@/hooks/use-fetch";
-
-import {getUrls} from "@/db/apiUrls";
-import {getClicksForUrls} from "@/db/apiClicks";
-import {UrlState} from "@/context";
+import { getUrls } from "@/db/apiUrls";
+import { getClicksForUrls } from "@/db/apiClicks";
+import { UrlState } from "@/context";
 
 const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const {user} = UrlState();
-  const {loading, error, data: urls, fn: fnUrls} = useFetch(getUrls, user.id);
+  const { user } = UrlState();
+  const { loading, error, data: urls, fn: fnUrls } = useFetch(getUrls, user.id);
   const {
     loading: loadingClicks,
     data: clicks,
@@ -30,7 +27,6 @@ const Dashboard = () => {
   );
 
   useEffect(() => {
-    console.log(urls?.length);
     if (!urls?.length) fnUrls();
   }, []);
 

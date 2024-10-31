@@ -10,6 +10,7 @@ import LandingPage from "./pages/landing";
 import Dashboard from "./pages/dashboard";
 import LinkPage from "./pages/link";
 import Auth from "./pages/auth";
+import ErrorPage from "./pages/error-page";
 
 const router = createBrowserRouter([
   {
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
       {
         path: "/:id",
         element: <RedirectLink />,
+      },
+      {
+        path: "*",
+        element: <ErrorPage />,
       },
     ],
   },
