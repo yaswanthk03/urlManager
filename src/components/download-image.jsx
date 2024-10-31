@@ -91,7 +91,7 @@ const DownloadImage = ({ url }) => {
           <DialogTitle className="flex justify-between items-center font-bold text-2xl">
             <span>Create New QR Code</span>
             <DialogClose asChild>
-              <Button className="bg-green-500" onClick={downloadImage}>
+              <Button className="bg-green-500 mr-5" onClick={downloadImage}>
                 Direct Download
               </Button>
             </DialogClose>
