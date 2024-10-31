@@ -26,7 +26,7 @@ const Header = () => {
     <>
       <nav className="py-4 flex justify-between items-center">
         <Link to="/">
-          <img src="/logo.png" className="h-16" alt="Trimrr Logo" />
+          <img src="/logo.png" className="h-16" alt="Website Logo" />
         </Link>
 
         {location.pathname === "/" ||
@@ -39,7 +39,10 @@ const Header = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger className="w-10 rounded-full overflow-hidden">
                   <Avatar>
-                    <AvatarImage src={user?.user_metadata?.profile_pic} />
+                    <AvatarImage
+                      src={user?.user_metadata?.profile_pic}
+                      alt="profile pic"
+                    />
                     <AvatarFallback>
                       {user?.user_metadata?.name.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
