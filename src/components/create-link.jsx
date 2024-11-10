@@ -10,15 +10,14 @@ import {
 import {Input} from "@/components/ui/input";
 import {Card} from "./ui/card";
 import {useNavigate, useSearchParams} from "react-router-dom";
-import {useEffect, useRef, useState} from "react";
+import { useEffect, useState } from "react";
 import Error from "./error";
 import * as yup from "yup";
 import useFetch from "@/hooks/use-fetch";
-import {createUrl} from "@/db/apiUrls";
-import {BeatLoader} from "react-spinners";
-import {UrlState} from "@/context";
-import {QRCode} from "react-qrcode-logo";
-import { toast } from "react-toastify";
+import { createUrl } from "@/db/apiUrls";
+import { BeatLoader } from "react-spinners";
+import { UrlState } from "@/context";
+import { QRCode } from "react-qrcode-logo";
 
 export function CreateLink() {
   const { user } = UrlState();
@@ -71,14 +70,11 @@ export function CreateLink() {
     try {
       await schema.validate(formValues, { abortEarly: false });
       await fnCreateUrl();
-      toast("Link created successfully", { type: "success" });
     } catch (e) {
       const newErrors = {};
-
       e?.inner?.forEach((err) => {
         newErrors[err.path] = err.message;
       });
-      toast("Failed to create link", { type: "error" });
       setErrors(newErrors);
     }
   };

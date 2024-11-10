@@ -1,7 +1,7 @@
-import supabase, {supabaseUrl} from "./supabase";
+import supabase from "./supabase";
 
 export async function getUrls(user_id) {
-  let {data, error} = await supabase
+  let { data, error } = await supabase
     .from("urls")
     .select("*")
     .eq("user_id", user_id);
@@ -14,8 +14,8 @@ export async function getUrls(user_id) {
   return data;
 }
 
-export async function getUrl({id, user_id}) {
-  const {data, error} = await supabase
+export async function getUrl({ id, user_id }) {
+  const { data, error } = await supabase
     .from("urls")
     .select("*")
     .eq("id", id)
@@ -59,7 +59,8 @@ export async function getLongUrl(id) {
 }
 
 export async function createUrl({ title, longUrl, customUrl, user_id }) {
-  const char = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const char =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_#$&[]";
 
   const short_url =
     "@" +
@@ -71,7 +72,7 @@ export async function createUrl({ title, longUrl, customUrl, user_id }) {
   if (customUrl) {
     for (let i = 0; i < customUrl.length; i++) {
       if (!char.includes(customUrl[i])) {
-        throw new Error("Invalid custom URL");
+        throw new Error("Allowed special charecters: [ _ # $ & ]");
       }
     }
     // check if the customUrl is already taken
@@ -81,6 +82,10 @@ export async function createUrl({ title, longUrl, customUrl, user_id }) {
       .eq("custom_url", customUrl);
     if (shortUrlData.length > 0) {
       throw new Error("Custom URL already taken");
+    }
+    if (shortUrlError) {
+      console.error("Error fetching custom link:", shortUrlError);
+      return;
     }
   }
 
@@ -105,11 +110,6 @@ export async function createUrl({ title, longUrl, customUrl, user_id }) {
 }
 
 export async function deleteUrl(id) {
-  const { data: qrData, error: qrError } = await supabase
-    .from("urls")
-    .select("short_url")
-    .eq("id", id);
-
   const { data, error } = await supabase.from("urls").delete().eq("id", id);
 
   if (error) {

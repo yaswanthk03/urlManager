@@ -7,7 +7,7 @@ import { UrlState } from "@/context";
 import { getClicksForUrl } from "@/db/apiClicks";
 import { deleteUrl, getUrl } from "@/db/apiUrls";
 import useFetch from "@/hooks/use-fetch";
-import { Copy, LinkIcon, Trash } from "lucide-react";
+import { LinkIcon, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { BarLoader, BeatLoader } from "react-spinners";
@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import CopyLink from "@/components/copy-link";
 
 const LinkPage = () => {
   const navigate = useNavigate();
@@ -89,19 +90,7 @@ const LinkPage = () => {
             {new Date(url?.created_at).toLocaleString()}
           </span>
           <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              onClick={() => {
-                try {
-                  navigator.clipboard.writeText(`${siteUrl + link}`);
-                  toast(`${siteUrl + link} Copied`, { type: "success" });
-                } catch (error) {
-                  toast("Failed to copy link", { type: "error" });
-                }
-              }}
-            >
-              <Copy />
-            </Button>
+            <CopyLink short_url={url?.short_url} custom_url={url?.custom_url} />
             <DownloadImage url={url} />
             <Button
               variant="ghost"
@@ -129,24 +118,33 @@ const LinkPage = () => {
             fgColor="#000000"
           />
           {stats?.length !== 0 && (
-            <table class="scrolldown">
+            <table className="scrolldown">
               <tbody>
-                <>
-                  <th>extention</th>
-                  <th>City</th>
-                  <th>Device</th>
-                  <th>DateTime</th>
-                  {stats?.map((stat, i) => (
-                    <tr key={i}>
-                      <td className="font-medium">{stat.extension}</td>
-                      <td>{stat.city}</td>
-                      <td>{stat.device}</td>
-                      <td className="w-32">
-                        {new Date(stat.created_at).toLocaleString()}
-                      </td>
-                    </tr>
-                  ))}
-                </>
+                <tr className="text-green-500">
+                  <td>
+                    <b>Extention</b>
+                  </td>
+                  <td>
+                    <b>City</b>
+                  </td>
+                  <td>
+                    <b>Device</b>
+                  </td>
+                  <td>
+                    <b>DateTime</b>
+                  </td>
+                </tr>
+
+                {stats?.map((stat, i) => (
+                  <tr key={i}>
+                    <td className="font-medium">{stat.extension}</td>
+                    <td>{stat.city}</td>
+                    <td>{stat.device}</td>
+                    <td className="w-32">
+                      {new Date(stat.created_at).toLocaleString()}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           )}

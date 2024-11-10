@@ -50,6 +50,12 @@ const Signup = () => {
     }
   }, [error, data]);
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSignup();
+    }
+  };
+
   const handleSignup = async () => {
     setErrors([]);
     try {
@@ -134,6 +140,7 @@ const Signup = () => {
             type="password"
             placeholder="Retype Password"
             onChange={handleInputChange}
+            onKeyPress={handleKeyPress}
           />
         </div>
         {errors.confirmation && <Error message={errors.confirmation} />}
@@ -148,7 +155,7 @@ const Signup = () => {
         {errors.profile_pic && <Error message={errors.profile_pic} />}
       </CardContent>
       <CardFooter>
-        <Button onClick={handleSignup}>
+        <Button onClick={handleSignup} disabled={loading}>
           {loading ? (
             <BeatLoader size={10} color="#36d7b7" />
           ) : (

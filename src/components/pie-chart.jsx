@@ -18,7 +18,7 @@ export default function App({ stats, value }) {
     acc[item[value]]++;
     return acc;
   }, {});
-  console.log(valueCount);
+
   const result = Object.keys(valueCount).map((device) => ({
     device,
     count: valueCount[device],

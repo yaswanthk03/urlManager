@@ -14,11 +14,13 @@ export async function login({email, password}) {
 export async function signup({ name, email, password, profile_pic }) {
   const fileName = `dp-${name.split(" ").join("-")}-${Math.random()}`;
 
-  const { error: storageError } = await supabase.storage
-    .from("profile_pic")
-    .upload(fileName, profile_pic);
+  if (profile_pic) {
+    const { error: storageError } = await supabase.storage
+      .from("profile_pic")
+      .upload(fileName, profile_pic);
 
-  if (storageError) throw new Error(storageError.message);
+    if (storageError) throw new Error(storageError.message);
+  }
 
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -26,11 +28,18 @@ export async function signup({ name, email, password, profile_pic }) {
     options: {
       data: {
         name,
-        profile_pic: `${supabaseUrl}/storage/v1/object/public/profile_pic/${fileName}`,
+        profile_pic: profile_pic
+          ? `${supabaseUrl}/storage/v1/object/public/profile_pic/${fileName}`
+          : null,
       },
     },
   });
 
+  if (error.code === "weak_password") {
+    throw new Error(
+      "Password is too weak. Please include at least one uppercase letter, one lowercase letter, a number, and a special character to strengthen your password."
+    );
+  }
   if (error) throw new Error(error.message);
 
   return data;

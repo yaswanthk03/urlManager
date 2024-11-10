@@ -30,15 +30,15 @@ const Login = () => {
   });
 
   const handleInputChange = (e) => {
-    const {name, value} = e.target;
+    const { name, value } = e.target;
     setFormData((prevState) => ({
       ...prevState,
       [name]: value,
     }));
   };
 
-  const {loading, error, fn: fnLogin, data} = useFetch(login, formData);
-  const {fetchUser} = UrlState();
+  const { loading, error, fn: fnLogin, data } = useFetch(login, formData);
+  const { fetchUser } = UrlState();
 
   useEffect(() => {
     if (error === null && data) {
@@ -48,6 +48,12 @@ const Login = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error, data]);
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleLogin();
+    }
+  };
+
   const handleLogin = async () => {
     setErrors([]);
     try {
@@ -55,12 +61,10 @@ const Login = () => {
         email: Yup.string()
           .email("Invalid email")
           .required("Email is required"),
-        password: Yup.string()
-          .min(6, "Password must be at least 6 characters")
-          .required("Password is required"),
+        password: Yup.string().required("Password is required"),
       });
 
-      await schema.validate(formData, {abortEarly: false});
+      await schema.validate(formData, { abortEarly: false });
       await fnLogin();
     } catch (e) {
       const newErrors = {};
@@ -99,6 +103,7 @@ const Login = () => {
             type="password"
             placeholder="Enter Password"
             onChange={handleInputChange}
+            onKeyPress={handleKeyPress}
           />
         </div>
         {errors.password && <Error message={errors.password} />}

@@ -8,6 +8,7 @@ import {BeatLoader} from "react-spinners";
 import DownloadImage from "./download-image";
 import { QRCode } from "react-qrcode-logo";
 import { toast } from "react-toastify";
+import CopyLink from "./copy-link";
 
 const LinkCard = ({ url = [], fetchUrls }) => {
   const { loading: loadingDelete, fn: fnDelete } = useFetch(deleteUrl, url.id);
@@ -41,19 +42,7 @@ const LinkCard = ({ url = [], fetchUrls }) => {
         </span>
       </Link>
       <div className="flex gap-2">
-        <Button
-          variant="ghost"
-          onClick={() => {
-            try {
-              navigator.clipboard.writeText(`${siteUrl + link}`);
-              toast(`${siteUrl + link} Copied`, { type: "success" });
-            } catch (error) {
-              toast("Failed to copy link", { type: "error" });
-            }
-          }}
-        >
-          <Copy />
-        </Button>
+        <CopyLink short_url={url?.short_url} custom_url={url?.custom_url} />
         <DownloadImage url={url} />
 
         <Button
