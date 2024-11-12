@@ -122,7 +122,7 @@ const LinkPage = () => {
               <tbody>
                 <tr className="text-green-500">
                   <td>
-                    <b>Extention</b>
+                    <b>Extension</b>
                   </td>
                   <td>
                     <b>City</b>
@@ -130,7 +130,7 @@ const LinkPage = () => {
                   <td>
                     <b>Device</b>
                   </td>
-                  <td>
+                  <td className="w-32">
                     <b>DateTime</b>
                   </td>
                 </tr>
@@ -181,7 +181,8 @@ const LinkPage = () => {
                       City
                     </SelectItem>
                     <SelectItem value="device">Device</SelectItem>
-                    <SelectItem value="extention">Extention</SelectItem>
+                    <SelectItem value="extension">Extension</SelectItem>
+                    <SelectItem value="vendor">Vendor</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
