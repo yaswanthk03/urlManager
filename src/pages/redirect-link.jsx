@@ -18,6 +18,7 @@ const RedirectLink = () => {
   });
 
   useEffect(() => {
+    window.location.href = `https://urlmanger.in/api/redirect/${id}`;
     fn().then(() => {
       setIsDataFetched(true);
     });

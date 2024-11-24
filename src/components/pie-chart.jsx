@@ -1,7 +1,16 @@
 /* eslint-disable react/prop-types */
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+const COLORS = [
+  "#0088FE",
+  "#00C49F",
+  "#FFBB28",
+  "#FF8042",
+  "#92C5F9",
+  "#87BB62",
+  "#876FD4",
+  "#F8AE54",
+];
 
 // function to export pie chart for a given parameter in the stats
 // stats: array of objects containing the stats
